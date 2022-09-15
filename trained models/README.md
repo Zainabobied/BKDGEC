@@ -1,28 +1,9 @@
 
-# Augmented data
-The augmented data of each proposed approach is available in .csv format in the below links :
-
-[Source](https://drive.google.com/file/d/1LB0MOzpN8lGovKIEhUgilDpnNjBRHYfZ/view?usp=sharing)
-
-[Token](https://drive.google.com/file/d/10xSxu5bCp34yV0uGi91ZfY55djboICdK/view?usp=sharing)
-
-[Mono](https://drive.google.com/file/d/1JrpO-YLxBvN6PekGTcrfgkZk8_vbqwFS/view?usp=sharing)
-
-[Replace](https://drive.google.com/file/d/1yNw8ImqafnN-ndjKaWsqz0eGAKF4ngav/view?usp=sharing)
-
-[Reverce](https://drive.google.com/file/d/14q2X_gp3hXo5hU0rw3WQbEc720B1-g_Z/view?usp=sharing)
-
-[Swap](https://drive.google.com/file/d/1Hg6nMXaoxBUPfIpg3rzgVBCZIlvnhOsX/view?usp=sharing)
-
-[Misspelling](https://drive.google.com/file/d/1tvHfX4qNFR3OeItAW8RtiG6mHXRf-dZx/view?usp=sharing)
-
-[DAGEC](https://drive.google.com/file/d/15zq8TvnKzVSAWX3k2uatadCC2OdpDUdW/view?usp=sharing)
-
-
-
+# synthetic data
+The synthetic data are available in .csv format in the below link:
+[EDSE](https://drive.google.com/file/d/15zq8TvnKzVSAWX3k2uatadCC2OdpDUdW/view?usp=sharing)
 
 # Preparing the Data
-
 Import all the required modules and packages.
  
 ```py
