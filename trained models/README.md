@@ -1,49 +1,48 @@
 
-# synthetic data
-The synthetic data are available in .csv format in the below link:
 
-[EDSE](https://drive.google.com/file/d/15zq8TvnKzVSAWX3k2uatadCC2OdpDUdW/view?usp=sharing)
+# Trained models
+We provide two versions for L2R and R2L of our proposed model that we used for re-ranking L2R as below: 
 
-# Preparing the Data
-Import all the required modules and packages.
- 
-```py
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torchtext.data import TabularDataset, Field, Iterator, BucketIterator, ReversibleField
+- [ArabGEC_R2L.pth](https://drive.google.com/file/d/15J2qPWy2-x8rSejSyxoE6fYrRebkaBsD/view?usp=sharing)
 
-import pyarabic.araby as araby
-import pyarabic.number as number
 
-import bpemb
-from bpemb import BPEmb
-bpemb_ar = BPEmb(lang="ar", vs=1000, dim=300) 
-```
-Create the tokenizer using bpemb as belllow:
+- [ArabGEC_L2R.pth](https://drive.google.com/file/d/15J2qPWy2-x8rSejSyxoE6fYrRebkaBsD/view?usp=sharing)
+
+
+
+# load models
+To load one of these models in your notebook used the below lines: 
 
 ```py
-def normalizeString(line):
-    line = araby.strip_tatweel(line)
-    line = araby.strip_tashkeel(line)
-    line = bpemb_ar.encode(line)
-    return line
+transformer = Transformer(
+    encoder=EncoderLayer(
+        vocab_size=len(SRC.vocab),
+        max_len=MAX_LEN,
+        d_model=D_MODEL,
+        n_heads=N_HEADS,
+        hidden_size=HIDDEN_SIZE,
+        dropout=DROPOUT,
+        n_layers=N_LAYERS
+    ),
+    decoder=DecoderLayer(
+        vocab_size=len(TRG.vocab),
+        max_len=MAX_LEN,
+        d_model=D_MODEL,
+        n_heads=N_HEADS,
+        hidden_size=HIDDEN_SIZE,
+        dropout=DROPOUT,
+        n_layers=N_LAYERS
+    ),
+    src_pad_index=SRC.vocab.stoi[SRC.pad_token],
+    dest_pad_index=TRG.vocab.stoi[TRG.pad_token]
+).to(DEVICE)
+
+optimizer = optim.Adam(params=transformer.parameters(), lr=LR)
+criterion = nn.CrossEntropyLoss(ignore_index=TRG.vocab.stoi[TRG.pad_token])
+trainer = Trainer(model=transformer, optimizer=optimizer, criterion=criterion)
+
+checkpoint = torch.load('./ArbGEC_R2L.pth')
+optimizer.load_state_dict(checkpoint['optimizer'])          
+transformer.load_state_dict(checkpoint['state_dict'])
 ```
-
-Then create fields, the model expects data to be fed with in fromat of the batch dimension first, so we use batch_first = True:
-
-```py
-SRC = Field(tokenize= normalizeString, init_token='<sos>', eos_token='<eos>',  batch_first=True) 
-TRG = Field(tokenize= normalizeString, init_token='<sos>', eos_token='<eos>',  batch_first=True) 
-```
-
-Next, build the vocabulary and load the dataset:
-
-````py
-SRC.build_vocab(train_data, min_freq = 2)
-TRG.build_vocab(train_data, min_freq = 2)
-
-train_data, valid_data = TabularDataset.splits(path='../data/',train='AGEC_Training_set.csv',
-    validation='AGEC_development_set.csv' , format='csv',
-    fields=[('src', SRC), ('trg', TRG)], skip_header=True) 
+The whole code files will be released soon!
