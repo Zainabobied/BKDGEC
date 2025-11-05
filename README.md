@@ -7,7 +7,7 @@ This project introduces a Grammatical Error Correction (GEC) framework as a mach
    - A semi-supervised confusion method
    - Generates wide parallel training data
    - Ensures high diversity of training patterns
-   - <p align="center">
+<p align="center">
   <img src="BKDGEC/images and diagrams/data.png" width="70%">
   <br>
   <i>Architecture of the Equal Distribution of Synthetic Errors (EDSE) approach is made of two synthetic pipelines that have the same
