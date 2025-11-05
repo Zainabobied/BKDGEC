@@ -93,7 +93,15 @@ python evaluate.py --model_path checkpoints/best_model.pt --test_data data/test/
 If you use this code in your research, please cite our paper:
 
 ```bibtex
-Mahmoud, Zeinab, Chunlin Li, Marco Zappatore, Aiman Solyman, Ali Alfatemi, Ashraf Osman Ibrahim, and Abdelzahir Abdelmaboud. "Semi-supervised learning and bidirectional decoding for effective grammar correction in low-resource scenarios." PeerJ Computer Science 9 (2023): e1639.
+@article{mahmoud2023semi,
+  title={Semi-supervised learning and bidirectional decoding for effective grammar correction in low-resource scenarios},
+  author={Mahmoud, Zeinab and Li, Chunlin and Zappatore, Marco and Solyman, Aiman and Alfatemi, Ali and Ibrahim, Ashraf Osman and Abdelmaboud, Abdelzahir},
+  journal={PeerJ Computer Science},
+  volume={9},
+  pages={e1639},
+  year={2023},
+  publisher={PeerJ Inc.}
+}
 ```
 
 ## Contact
