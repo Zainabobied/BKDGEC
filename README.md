@@ -8,11 +8,12 @@ This project introduces a Grammatical Error Correction (GEC) framework as a mach
    - Generates wide parallel training data
    - Ensures high diversity of training patterns
 <p align="center">
-  <img src="BKDGEC/images and diagrams/data.png" width="70%">
+  <img src="BKDGEC/images%20and%20diagrams/data.png" width="70%">
   <br>
   <i>Architecture of the Equal Distribution of Synthetic Errors (EDSE) approach is made of two synthetic pipelines that have the same
-probability of error generations, green refers to the original data, red is the synthetic data (erroneous), and blue is the parallel training data. </i>
+probability of error generations. Green refers to original data, red to synthetic erroneous data, and blue to the parallel training data.</i>
 </p>
+>
 
 2. **BKDGEC (Bidirectional Knowledge Distillation for GEC)**
    - Utilizes two decoders:
