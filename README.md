@@ -4,9 +4,7 @@
 This project introduces a Grammatical Error Correction (GEC) framework as a machine translation task for low-resource languages, specifically applied to the Arabic language. The framework consists of two main components:
 
 1. **EDSE (Equal Distribution of Synthetic Errors)**
-   - A semi-supervised confusion method
-   - Generates wide parallel training data
-   - Ensures high diversity of training patterns
+
      
 <p align="center">
   <img src="BKDGEC/images%20and%20diagrams/data.png" width="70%">
