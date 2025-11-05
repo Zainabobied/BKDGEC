@@ -1,0 +1,8 @@
+# Python runtime (set up outside pip): Python 3.6.10 or later
+pytorch==1.6.0
+torchtext==0.6.0
+numpy==1.17.0
+pandas==1.17.0
+PyArabic==0.6.10
+bpemb==0.3.2
+nltk==3.3
