@@ -9,7 +9,7 @@ This project introduces a Grammatical Error Correction (GEC) framework as a mach
 <p align="center">
   <img src="/images%20and%20diagrams/data.png" alt="EDSE Architecture" width="70%">
   <br>
-  <i>Architecture of the Equal Distribution of Synthetic Errors (EDSE) approach is made of two synthetic pipelines that have the same structure but generate different types of errors.</i>
+  <i>Architecture of the Equal Distribution of Synthetic Errors (EDSE) approach is made of two synthetic pipelines that have the same structure but generate different types of errors</i>
 </p>
 
 2. **BKDGEC (Bidirectional Knowledge Distillation for GEC)**
@@ -21,6 +21,13 @@ This project introduces a Grammatical Error Correction (GEC) framework as a mach
    - Leverages backward decoder's information about longer-term future
    - Encourages auto-regressive GEC models to plan ahead
    - Joint training process for both decoders
+  
+<p align="center">
+  <img src="/images%20and%20diagrams/model_gec.png" alt="BKDGEC Architecture" width="70%">
+  <br>
+  <i>The architecture of the BKDGEC model incorporates two decoders, labeled as Backward and Forward, represented by yellow boxes. These decoders consist of Self-Attention (SA), Cross-Attention
+(CA), and a Feed-Forward Neural Network (FFN)</i>
+</p>
 
 ## Requirements
 
