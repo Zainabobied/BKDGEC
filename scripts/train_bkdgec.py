@@ -11,7 +11,7 @@ Tokenization:
   - SentencePiece model (BPE) provided via --spm_model
 
 Config:
-  - YAML at configs/model.yml (optional). CLI args override configs.
+  - YAML at configs/configs.yml (optional). CLI args override configs.
 
 Outputs:
   - checkpoints in --save_dir (best.pt + epoch###.pt)
