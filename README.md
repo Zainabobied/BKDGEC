@@ -105,7 +105,9 @@ python scripts/generate_edse.py \
 
 3. Evaluation:
 ```bash
-python evaluate.py --model_path checkpoints/best_model.pt --test_data data/test/
+python m2Scripts/m2scorer.py \
+  system_outputs/pred.txt \
+  data/QALB-2014/test.gold.m2
 ```
 
 ## Citation
