@@ -92,12 +92,15 @@ BKDGEC/
 
 1. Data Generation (EDSE):
 ```bash
-python scripts/edse_generate.py --input data/raw/input.txt --output data/synthetic/
+python scripts/edse_generate.py --input data/input.txt --output data/
 ```
 
 2. Training:
 ```bash
-python train_bkdgec.py --config configs/train_config.yml
+python scripts/generate_edse.py \
+  --input data/mono.txt \
+  --output data/train.csv \
+  --config configs/edse.yml
 ```
 
 3. Evaluation:
