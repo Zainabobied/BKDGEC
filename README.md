@@ -66,7 +66,7 @@ BKDGEC/
 │ └── edse.yml
 │
 ├── data/ # Data directory 
-│ ├── mono.txt # Clean Arabic corpus 
+│ ├── source_text.txt # Clean Arabic corpus 
 │ ├── vocab.txt # Vocabulary 
 │ └── train.csv # Dataset (src, trg)
 │
