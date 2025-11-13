@@ -107,7 +107,7 @@ python scripts/generate_edse.py \
 ```bash
 python m2Scripts/m2scorer.py \
   system_outputs/pred.txt \
-  data/QALB-2014/test.gold.m2
+  m2Scripts/QALB_test2014.m2
 ```
 
 ## Citation
