@@ -10,6 +10,7 @@ Usage:
 
 Input:
   - CSV with columns: src (corrupted), trg (clean)
+  
 Config (YAML, e.g. configs/configs.yml):
   paths:
     spm_model: "models/spm_ar1k.model"
