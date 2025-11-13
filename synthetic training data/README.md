@@ -3,7 +3,9 @@
 # synthetic data
 The synthetic data are available in .csv format in the below link:
 
-[EDSE](https://drive.google.com/file/d/15zq8TvnKzVSAWX3k2uatadCC2OdpDUdW/view?usp=sharing)
+[EDSE_Training_set.csv - 6.23 GB](https://drive.google.com/file/d/1tZq05b453lDsSLDCHQztM9eCCgN_gEah/view?usp=sharing)
+
+[EDSE_development_set.csv - 740 MB](https://drive.google.com/file/d/1_6YFDlSkR7ifJ0P2DLuysKzrHBzCYnit/view?usp=sharing)
 
 # Preparing the Data
 Import all the required modules and packages.
