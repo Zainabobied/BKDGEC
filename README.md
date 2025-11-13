@@ -13,6 +13,7 @@ This project introduces a Grammatical Error Correction (GEC) framework as a mach
 </p>
 
 2. **BKDGEC (Bidirectional Knowledge Distillation for GEC)**
+   
 Employs two complementary decoders—one forward (right-to-left) and one backward (left-to-right)—that are trained jointly through a knowledge distillation mechanism with regularization. The model uses Kullback–Leibler divergence to measure agreement between the two decoding directions, allowing the backward decoder to provide information about longer-term future context while guiding the forward decoder to make more consistent predictions. This bidirectional setup mitigates exposure bias, encourages autoregressive GEC models to plan ahead, and enhances overall grammatical correction accuracy through a unified joint training process.
   
 <p align="center">
