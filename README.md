@@ -1,9 +1,9 @@
 # BKDGEC: Semi-supervised learning and bidirectional decoding for effective grammar correction in low-resource scenarios
 
 ## Overview
-This project introduces a Grammatical Error Correction (GEC) framework as a machine translation task for low-resource languages, specifically applied to the Arabic language. The framework consists of two main components:
+This project introduces a Grammatical Error Correction (GEC) framework as a machine translation task for low-resource languages, specifically applied to the Arabic language. The framework consists of two main components: Equal Distribution of Synthetic Errors (EDSE) and Bidirectional Knowledge Distillation for GEC (BKDGEC). Employs two complementary decoders—one forward (right-to-left) and one backward (left-to-right)—that are trained jointly through a knowledge distillation mechanism with regularization. The model uses Kullback–Leibler divergence to measure agreement between the two decoding directions, allowing the backward decoder to provide information about longer-term future context while guiding the forward decoder to make more consistent predictions. This bidirectional setup mitigates exposure bias, encourages autoregressive GEC models to plan ahead, and enhances overall grammatical correction accuracy through a unified joint training process.
 
-1. **EDSE (Equal Distribution of Synthetic Errors)**
+1. **EDSE**
 
      
 <p align="center">
@@ -12,10 +12,8 @@ This project introduces a Grammatical Error Correction (GEC) framework as a mach
   <i>Architecture of the Equal Distribution of Synthetic Errors (EDSE) approach is made of two synthetic pipelines that have the same structure but generate different types of errors</i>
 </p>
 
-2. **BKDGEC (Bidirectional Knowledge Distillation for GEC)**
+2. **BKDGEC**
    
-Employs two complementary decoders—one forward (right-to-left) and one backward (left-to-right)—that are trained jointly through a knowledge distillation mechanism with regularization. The model uses Kullback–Leibler divergence to measure agreement between the two decoding directions, allowing the backward decoder to provide information about longer-term future context while guiding the forward decoder to make more consistent predictions. This bidirectional setup mitigates exposure bias, encourages autoregressive GEC models to plan ahead, and enhances overall grammatical correction accuracy through a unified joint training process.
-  
 <p align="center">
   <img src="/images%20and%20diagrams/model_gec.png" alt="BKDGEC Architecture" width="70%">
   <br>
