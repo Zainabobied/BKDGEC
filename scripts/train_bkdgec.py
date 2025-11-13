@@ -1,35 +1,36 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Training script for BKDGEC on EDSE-generated CSV.
 
+Usage:
+    python scripts/train_bkdgec.py \
+        --input data/train.csv \
+        --config configs/configs.yml
+
 Input:
   - CSV with columns: src (corrupted), trg (clean)
-
-Tokenization:
-  - SentencePiece model (BPE) provided via --spm_model
-
-Config:
-  - YAML at configs/configs.yml (optional). CLI args override configs.
-
-Outputs:
-  - checkpoints in --save_dir (best.pt + epoch###.pt)
+Config (YAML, e.g. configs/configs.yml):
+  paths:
+    spm_model: "models/spm_ar1k.model"
+    save_dir:  "checkpoints/bkdgec"
+Output:
+  - Single trained model checkpoint:
+      <save_dir>/bkdgec.pt
 """
 
 import argparse
-import math
 import os
-import yaml
 import random
-import pandas as pd
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
+import pandas as pd
+import sentencepiece as spm
 import torch
 import torch.nn as nn
+import yaml
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
-import sentencepiece as spm
 
 from bkdgec_model import BKDGEC
 
@@ -42,9 +43,11 @@ UNK = 3
 
 # ----------------------- Dataset -----------------------
 class CsvGEDataset(Dataset):
+    """Simple GEC dataset over a CSV with columns src,trg."""
+
     def __init__(self, csv_path: str, sp: spm.SentencePieceProcessor, max_len: int = 400):
         self.df = pd.read_csv(csv_path)
-        if not {"src", "trg"}.issubset(set(self.df.columns)):
+        if not {"src", "trg"}.issubset(self.df.columns):
             raise ValueError("CSV must contain 'src' and 'trg' columns.")
         self.sp = sp
         self.max_len = max_len
@@ -67,7 +70,7 @@ class CsvGEDataset(Dataset):
         src_ids = self._encode(src_txt)
         trg_ids = self._encode(trg_txt)
 
-        # R2L target: reverse the inner tokens (BOS ... EOS)
+        # R2L target: reverse inner tokens (between BOS and EOS)
         trg_r2l = trg_ids[:]
         core = trg_r2l[1:-1]
         trg_r2l[1:-1] = list(reversed(core))
@@ -92,8 +95,21 @@ def set_seed(seed: int):
     torch.cuda.manual_seed_all(seed)
 
 
-def load_config(path: Optional[str]) -> dict:
+def load_config(path: str) -> dict:
+    """
+    Load YAML config and merge with sane defaults.
+    Expected keys:
+      - paths.spm_model
+      - paths.save_dir
+      - model.*
+      - train.*
+      - device
+    """
     base = {
+        "paths": {
+            "spm_model": "models/spm_ar1k.model",
+            "save_dir": "checkpoints/bkdgec",
+        },
         "model": {
             "d_model": 256,
             "nhead": 8,
@@ -110,10 +126,10 @@ def load_config(path: Optional[str]) -> dict:
             "seed": 42,
             "max_len": 400,
             "lambda_kd": 1.0,
-            "anneal_warm_steps": 1000,  # optional use if you add annealing
         },
         "device": "cuda" if torch.cuda.is_available() else "cpu",
     }
+
     if path and os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             user = yaml.safe_load(f) or {}
@@ -123,6 +139,7 @@ def load_config(path: Optional[str]) -> dict:
                 base[k].update(v)
             else:
                 base[k] = v
+
     return base
 
 
@@ -133,22 +150,22 @@ def train_one_epoch(
     opt: torch.optim.Optimizer,
     device: torch.device,
     cfg: dict,
-):
+) -> float:
     model.train()
     total = 0.0
-    pbar = tqdm(dl, desc="Train", leave=False)
     clip = cfg["train"]["clip"]
     lambda_kd = cfg["train"]["lambda_kd"]
 
+    pbar = tqdm(dl, desc="Train", leave=False)
     for src, trg_l2r, trg_r2l in pbar:
         src = src.to(device)
         trg_l2r = trg_l2r.to(device)
         trg_r2l = trg_r2l.to(device)
 
-        # Encoder
+        # Encode
         mem = model.encode(src)
 
-        # Teacher forcing inputs/targets
+        # Teacher forcing
         in_l2r, tgt_l2r = trg_l2r[:, :-1], trg_l2r[:, 1:]
         in_r2l, tgt_r2l = trg_r2l[:, :-1], trg_r2l[:, 1:]
 
@@ -156,7 +173,7 @@ def train_one_epoch(
         hid_l2r, logits_l2r = model.decode(in_l2r, mem, "l2r")
         hid_r2l, logits_r2l = model.decode(in_r2l, mem, "r2l")
 
-        # NLL losses
+        # NLL
         nll_l2r = model.sequence_nll(logits_l2r, tgt_l2r, ignore_index=PAD)
         nll_r2l = model.sequence_nll(logits_r2l, tgt_r2l, ignore_index=PAD)
 
@@ -175,51 +192,32 @@ def train_one_epoch(
     return total / len(dl)
 
 
-@torch.no_grad()
-def evaluate(model: BKDGEC, dl: DataLoader, device: torch.device) -> float:
-    model.eval()
-    total = 0.0
-    for src, trg_l2r, trg_r2l in dl:
-        src = src.to(device)
-        trg_l2r = trg_l2r.to(device)
-        trg_r2l = trg_r2l.to(device)
-
-        mem = model.encode(src)
-
-        in_r2l, tgt_r2l = trg_r2l[:, :-1], trg_r2l[:, 1:]
-        _, logits_r2l = model.decode(in_r2l, mem, "r2l")
-
-        total += model.sequence_nll(logits_r2l, tgt_r2l, ignore_index=PAD).item()
-    return total / len(dl)
-
-
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--train_csv", default="data/train.csv", help="CSV with columns src,trg")
-    ap.add_argument("--dev_csv", default=None, help="optional dev CSV with src,trg")
-    ap.add_argument("--spm_model", required=True, help="SentencePiece model file (e.g., spm_ar1k.model)")
-    ap.add_argument("--save_dir", default="runs/bkdgec", help="Where to save checkpoints")
-    ap.add_argument("--config", default="configs/model.yml", help="YAML config file (optional)")
+    ap.add_argument("--input", required=True, help="Training CSV with columns src,trg")
+    ap.add_argument("--config", default="configs/configs.yml", help="YAML config file")
     args = ap.parse_args()
 
-    os.makedirs(args.save_dir, exist_ok=True)
     cfg = load_config(args.config)
     set_seed(cfg["train"]["seed"])
 
-    # Tokenizer
-    sp = spm.SentencePieceProcessor(model_file=args.spm_model)
+    device = torch.device(cfg.get("device", "cuda" if torch.cuda.is_available() else "cpu"))
+    paths = cfg["paths"]
+    save_dir = paths.get("save_dir", "checkpoints/bkdgec")
+    os.makedirs(save_dir, exist_ok=True)
+
+    # SentencePiece tokenizer
+    sp = spm.SentencePieceProcessor(model_file=paths["spm_model"])
     vocab_size = sp.get_piece_size()
 
-    # Datasets
-    train_ds = CsvGEDataset(args.train_csv, sp, max_len=cfg["train"]["max_len"])
-    train_dl = DataLoader(train_ds, batch_size=cfg["train"]["batch_size"], shuffle=True, collate_fn=collate)
-
-    dev_dl = None
-    if args.dev_csv and os.path.exists(args.dev_csv):
-        dev_ds = CsvGEDataset(args.dev_csv, sp, max_len=cfg["train"]["max_len"])
-        dev_dl = DataLoader(dev_ds, batch_size=cfg["train"]["batch_size"], shuffle=False, collate_fn=collate)
-
-    device = torch.device(cfg.get("device", "cuda" if torch.cuda.is_available() else "cpu"))
+    # Dataset / DataLoader
+    train_ds = CsvGEDataset(args.input, sp, max_len=cfg["train"]["max_len"])
+    train_dl = DataLoader(
+        train_ds,
+        batch_size=cfg["train"]["batch_size"],
+        shuffle=True,
+        collate_fn=collate,
+    )
 
     # Model
     model = BKDGEC(
@@ -235,26 +233,15 @@ def main():
 
     opt = torch.optim.Adam(model.parameters(), lr=cfg["train"]["lr"])
 
-    best = float("inf")
+    # Training loop (train-only; no dev, single final checkpoint)
     for epoch in range(1, cfg["train"]["epochs"] + 1):
         avg = train_one_epoch(model, train_dl, opt, device, cfg)
+        print(f"Epoch {epoch:02d} - train loss {avg:.4f}")
 
-        if dev_dl is not None:
-            dev_loss = evaluate(model, dev_dl, device)
-        else:
-            dev_loss = avg  # fall back to train loss as proxy
-
-        # save per-epoch
-        path_epoch = os.path.join(args.save_dir, f"epoch{epoch:03d}.pt")
-        torch.save(model.state_dict(), path_epoch)
-
-        if dev_loss < best:
-            best = dev_loss
-            torch.save(model.state_dict(), os.path.join(args.save_dir, "best.pt"))
-
-        print(f"Epoch {epoch:02d} - train {avg:.4f} - dev {dev_loss:.4f}")
-
-    print("Done. Best dev loss:", best)
+    # Save single final model
+    out_path = os.path.join(save_dir, "bkdgec.pt")
+    torch.save(model.state_dict(), out_path)
+    print(f"Training finished. Saved model to: {out_path}")
 
 
 if __name__ == "__main__":
