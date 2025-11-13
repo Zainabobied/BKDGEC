@@ -98,8 +98,7 @@ python scripts/edse_generate.py --input data/input.txt --output data/
 2. Training:
 ```bash
 python scripts/train_bkdgec.py \
-  --input data/source_text.txt \
-  --output data/train.csv \
+  --input data/train.csv \
   --config configs/configs.yml
 ```
 
