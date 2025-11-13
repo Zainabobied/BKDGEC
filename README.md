@@ -70,18 +70,22 @@ BKDGEC/
 │ ├── vocab.txt # Vocabulary 
 │ └── train.csv # Dataset (src, trg)
 │
+├── images and diagrams/ # Visual figures 
+│
+├─ m2Scripts/
+│ ├─ 2015_gold.m2 # QALB-2015 official M² annotations
+│ └─ 2014_gold.m2 # QALB-2014 official M² annotations
+│
 ├── scripts/ # Core project scripts
 │ ├── bkdgec_model.py # BKDGEC model implementation
 │ ├── generate_edse.py # EDSE data generation script
 │ └── train_bkdgec.py # Model training script 
 │
+├── synthetic training data/ # The generated synthetic data
+│
 ├── trained models/ # Saved checkpoints 
 │
 ├── system outputs/ # Inference outputs
-│
-├── m2Scripts/ # Official M² scorer scripts for evaluation
-│
-├── images and diagrams/ # Visual figures 
 │
 ├── requirements.txt # Python dependencies
 │
@@ -92,7 +96,7 @@ BKDGEC/
 
 1. Data Generation (EDSE):
 ```bash
-python scripts/edse_generate.py --input data/input.txt --output data/
+python scripts/edse_generate.py --input data/source_text.txt --output data/
 ```
 
 2. Training:
