@@ -63,7 +63,7 @@ pip install -r requirements.txt
 BKDGEC/
 │
 ├── configs/ # Configuration files (EDSE + training configs)
-│ └── edse.yml
+│ └── configs.yml
 │
 ├── data/ # Data directory 
 │ ├── source_text.txt # Clean Arabic corpus 
@@ -97,10 +97,10 @@ python scripts/edse_generate.py --input data/input.txt --output data/
 
 2. Training:
 ```bash
-python scripts/generate_edse.py \
-  --input data/mono.txt \
+python scripts/train_bkdgec.py \
+  --input data/source_text.txt \
   --output data/train.csv \
-  --config configs/edse.yml
+  --config configs/configs.yml
 ```
 
 3. Evaluation:
