@@ -209,7 +209,7 @@ class EDSEGenerator:
         return detokenize(toks)
 
 # ------------------------------------------------------------
-# CLI: read mono.txt, write a single CSV with columns: src,trg
+# CLI: read source_text.txt, write a single CSV with columns: src,trg
 # ------------------------------------------------------------
 def main():
     ap = argparse.ArgumentParser()
