@@ -215,7 +215,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", default="data/source_text.txt", help="Clean Arabic sentences, one per line")
     ap.add_argument("--output", default="data/train.csv", help="Output CSV file path")
-    ap.add_argument("--config", default="configs/edse.yml", help="EDSE configuration YAML at repo root")
+    ap.add_argument("--config", default="configs/configs.yml", help="EDSE configuration YAML at repo root")
     args = ap.parse_args()
 
     gen = EDSEGenerator(args.config)
